@@ -42,6 +42,8 @@ export class TaskService {
       task.description = description;
       task.dueDate = dueDate;
       task.status = status;
+    } else {
+      throw new Error("Task not found")
     }
     return await api.default.update(task);
   }

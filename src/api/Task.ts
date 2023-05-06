@@ -8,7 +8,7 @@ export default {
   },
 
   async get(id: number): Promise<Task> {
-    const response = await axios.post(`/api/tasks/${id}`);
+    const response = await axios.get(`/api/tasks/${id}`);
     return response.data;
   },
 
