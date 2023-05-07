@@ -2,14 +2,15 @@
 <template>
 <div>
   <v-container>
-    <h1 class="text-center" >Task Manager</h1>
+    <h1 class="text-center">Task Manager</h1>
+    <p></p>
 
       <!-- Rows of Tasks here -->
       <v-row justify="center" v-for="(task, index) in tasks" :key="index" cols="12" sm="6" md="4">
-        <v-col cols="8">
+        <v-col cols="10">
           <!-- Task Card Goes Here -->
           <v-card @click="selectTask(task)">
-            <TaskItem />
+            <TaskItem :task="task"/>
             <!-- <v-card-title>{{ task.name }}</v-card-title>
             <v-card-text>{{ task.description }}</v-card-text> -->
           </v-card>
@@ -94,7 +95,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { Task, TaskService } from "@/services/TaskService";
+import { ITask, TaskService } from "@/services/TaskService";
 import TaskItem from "./TaskItem.vue";
 
 @Component({
@@ -104,9 +105,14 @@ import TaskItem from "./TaskItem.vue";
 })
 export default class TaskManager extends Vue {
   public taskService: TaskService = new TaskService();
-  public tasks: Task[] = [];
-  public task: Task = { name: "", description: "", dueDate: "", status: "New" };
-  public selectedTask: Task | null = null;
+  public tasks: ITask[] = [];
+  public task: ITask = {
+    name: "",
+    description: "",
+    dueDate: "",
+    status: "New",
+  };
+  public selectedTask: ITask | null = null;
   public isEditing = false;
   public headers = ["Name", "Description", "Due Date", "Status", "Actions"];
   public dialogOpen = false;
@@ -140,18 +146,18 @@ export default class TaskManager extends Vue {
     this.getTasks();
   }
 
-  public async deleteTask(task: Task) {
+  public async deleteTask(task: ITask) {
     await this.taskService.deleteTask(task.id);
     this.getTasks();
   }
 
-  public async editTask(task: Task) {
+  public async editTask(task: ITask) {
     this.task = { ...task };
     this.selectedTask = null;
     this.isEditing = true;
   }
 
-  public selectTask(task: Task) {
+  public selectTask(task: ITask) {
     this.task = { ...task };
     this.selectedTask = this.task;
     this.isEditing = true;

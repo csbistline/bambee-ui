@@ -1,6 +1,6 @@
 import { TaskApi } from '../api/Task'
 
-export interface Task {
+export interface ITask {
   id?: number;
   name: string;
   description: string;
@@ -9,8 +9,8 @@ export interface Task {
 }
 
 export class TaskService {
-  async createTask(name: string, description: string, dueDate: string): Promise<Task> {
-    const task: Task = {
+  async createTask(name: string, description: string, dueDate: string): Promise<ITask> {
+    const task: ITask = {
       name,
       description,
       dueDate,
@@ -19,11 +19,11 @@ export class TaskService {
     return await TaskApi.create(task)
   }
 
-  async getTasks(): Promise<Task[]> {
+  async getTasks(): Promise<ITask[]> {
     return await TaskApi.getAll();
   }
 
-  async getTaskById(id: number): Promise<Task> | undefined {
+  async getTaskById(id: number): Promise<ITask> | undefined {
     return await TaskApi.get(id);
   }
 
@@ -33,7 +33,7 @@ export class TaskService {
     description: string,
     dueDate: string,
     status: "New" | "Completed"
-  ): Promise<Task> {
+  ): Promise<ITask> {
     const task = await this.getTaskById(id);
     if (task) {
       task.name = name;
