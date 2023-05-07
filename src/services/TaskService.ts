@@ -1,4 +1,5 @@
-import * as api from '../api/Task'
+import { TaskApi } from '../api/Task'
+
 export interface Task {
   id?: number;
   name: string;
@@ -8,8 +9,6 @@ export interface Task {
 }
 
 export class TaskService {
-  private tasks: Task[] = [];
-
   async createTask(name: string, description: string, dueDate: string): Promise<Task> {
     const task: Task = {
       name,
@@ -17,16 +16,15 @@ export class TaskService {
       dueDate,
       status: "New",
     };
-    this.tasks.push(task);
-    return await api.default.create(task)
+    return await TaskApi.create(task)
   }
 
   async getTasks(): Promise<Task[]> {
-    return await api.default.getAll();
+    return await TaskApi.getAll();
   }
 
   async getTaskById(id: number): Promise<Task> | undefined {
-    return await api.default.get(id);
+    return await TaskApi.get(id);
   }
 
   async updateTask(
@@ -45,10 +43,10 @@ export class TaskService {
     } else {
       throw new Error("Task not found")
     }
-    return await api.default.update(task);
+    return await TaskApi.update(task);
   }
 
   async deleteTask(id: number): Promise<{ message: string }> {
-    return await api.default.delete(id);
+    return await TaskApi.delete(id);
   }
 }

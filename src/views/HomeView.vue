@@ -1,18 +1,18 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
-  </div>
+  <TaskManager />
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import TaskManager from "@/components/TaskManager.vue";
+import Vue from "vue";
+// import HelloWorld from "../components/HelloWorld.vue";
+import TaskManager from "../components/TaskManager.vue";
+export default Vue.extend({
+  // eslint-disable-next-line
+  name: "Home",
 
-@Component({
   components: {
     TaskManager,
   },
-})
-export default class HomeView extends Vue {}
+});
 </script>

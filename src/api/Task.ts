@@ -1,7 +1,12 @@
 import axios from "axios";
 import { Task } from "@/services/TaskService";
 
-export default {
+const TaskApi = {
+  async create(task: Task): Promise<Task> {
+    const response = await axios.post("/api/tasks", task);
+    return response.data;
+  },
+
   async getAll(): Promise<Task[]> {
     const response = await axios.get("/api/tasks");
     return response.data;
@@ -9,11 +14,6 @@ export default {
 
   async get(id: number): Promise<Task> {
     const response = await axios.get(`/api/tasks/${id}`);
-    return response.data;
-  },
-
-  async create(task: Task): Promise<Task> {
-    const response = await axios.post("/api/tasks", task);
     return response.data;
   },
 
@@ -27,3 +27,5 @@ export default {
     return response.data;
   },
 };
+
+export { TaskApi };

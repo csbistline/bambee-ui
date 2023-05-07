@@ -1,17 +1,19 @@
 <template>
-  <div id="app">
-    <TaskManager />
-  </div>
+  <v-app>
+    <v-container>
+      <router-view/>
+    </v-container>
+  </v-app>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import TaskManager from "@/components/TaskManager.vue";
+import Vue from "vue";
 
-@Component({
-  components: {
-    TaskManager,
-  },
-})
-export default class App extends Vue {}
+export default Vue.extend({
+  name: "App",
+
+  data: () => ({
+    //
+  }),
+});
 </script>
