@@ -115,14 +115,8 @@ export default class TaskManager extends Vue {
 
   public async editTask(task: ITask) {
     this.task = { ...task };
-    this.selectedTask = this.task;
     this.isEditing = true;
     this.dialogOpen = true;
-  }
-
-  public selectTask(task: ITask) {
-    this.task = { ...task };
-    this.selectedTask = this.task;
   }
 
   public resetForm() {
