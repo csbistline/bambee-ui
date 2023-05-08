@@ -5,7 +5,7 @@ export interface ITask {
   name: string;
   description: string;
   dueDate: string;
-  status: "New" | "Completed";
+  completed: boolean;
 }
 
 export class TaskService {
@@ -14,7 +14,7 @@ export class TaskService {
       name,
       description,
       dueDate,
-      status: "New",
+      completed: false,
     };
     return await TaskApi.create(task)
   }
@@ -32,14 +32,14 @@ export class TaskService {
     name: string,
     description: string,
     dueDate: string,
-    status: "New" | "Completed"
+    completed: boolean
   ): Promise<ITask> {
     const task = await this.getTaskById(id);
     if (task) {
       task.name = name;
       task.description = description;
       task.dueDate = dueDate;
-      task.status = status;
+      task.completed = completed;
     } else {
       throw new Error("Task not found")
     }

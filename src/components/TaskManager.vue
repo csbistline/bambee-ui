@@ -1,96 +1,46 @@
 <!-- eslint-disable vue/valid-v-slot -->
 <template>
-<div>
-  <v-container>
-    <h1 class="text-center">Task Manager</h1>
-    <p></p>
-
-      <!-- Rows of Tasks here -->
-      <v-row justify="center" v-for="(task, index) in tasks" :key="index" cols="12" sm="6" md="4">
-        <v-col cols="10">
-          <!-- Task Card Goes Here -->
-          <v-card @click="selectTask(task)">
-            <TaskItem :task="task"/>
-            <!-- <v-card-title>{{ task.name }}</v-card-title>
-            <v-card-text>{{ task.description }}</v-card-text> -->
-          </v-card>
+  <div>
+    <v-container>
+      <h1 class="text-center">Task Manager</h1>
+      <p></p>
+      <v-row justify="center">
+        <v-col cols="6" class="text-center">
+          <v-btn color="success" class="mb-4" rounded @click="dialogOpen = true">CREATE NEW TASK</v-btn>
+          <!-- Rows of Tasks here -->
+          <div class="mx-auto mb-2" max-width="800" v-for="(task, index) in tasks" :key="index">
+            <!-- Task Card Goes Here -->
+            <v-card>
+              <TaskItem :task="task" @selectTask="editTask" @deleteTask="deleteTask" @checked="changeTaskStatus" />
+            </v-card>
+          </div>
         </v-col>
       </v-row>
 
-      <v-dialog 
-        v-if="selectedTask" 
-        v-model="dialogOpen"
-        width="auto"
-        transition="dialog-bottom-transition"
-      >
-
-      <v-card>
-        <v-card-title>{{ task.name }}</v-card-title>
-        <v-card-text>
-          <v-form @submit.prevent="submitTask">
-          <v-text-field label="Task Name" v-model="task.name" required></v-text-field>
-          <v-textarea label="Description" v-model="task.description" required></v-textarea>
-          <v-date-picker v-model="task.dueDate" label="Due Date" required></v-date-picker>
-          <v-btn color="primary" type="submit">{{ isEditing ? 'Update Task' : 'Add Task' }}</v-btn>
-        </v-form>
-        </v-card-text>
-
-      </v-card>
-        <!-- <h2>{{ selectedTask.name }}</h2>
-        <p>{{ selectedTask.description }}</p>
-        <p>Due Date: {{ selectedTask.dueDate }}</p>
-        <p>Status: {{ selectedTask.status }}</p> -->
+      <!-- Edit Dialog -->
+      <v-dialog width="500" transition="dialog-bottom-transition" v-model="dialogOpen">
+        <v-card>
+          <v-card-title>{{ task.name }}</v-card-title>
+          <v-card-text>
+            <v-form @submit.prevent="submitTask">
+              <v-text-field label="Task Name" v-model="task.name" required>{{ task.name }}</v-text-field>
+              <v-textarea label="Description" v-model="task.description" required></v-textarea>
+              <v-row>
+                <v-col>
+                  <div>
+                    <v-date-picker v-model="task.dueDate" label="Due Date" required></v-date-picker>
+                  </div>
+                  <div>
+                    <v-btn color="primary" type="submit">{{ isEditing ? 'Update Task' : 'Add Task' }}</v-btn>
+                  </div>
+                </v-col>
+              </v-row>
+            </v-form>
+          </v-card-text>
+        </v-card>
       </v-dialog>
-  </v-container>
-  <!-- <div>
-    <h1>Task Manager</h1>
-    <form @submit.prevent="submitTask">
-      <div>
-        <label for="name">Task Name:</label>
-        <input type="text" id="name" v-model="task.name" required />
-      </div>
-      <div>
-        <label for="description">Description:</label>
-        <textarea id="description" v-model="task.description" required></textarea>
-      </div>
-      <div>
-        <label for="due-date">Due Date:</label>
-        <input type="date" id="due-date" v-model="task.dueDate" required />
-      </div>
-      <button type="submit">{{ isEditing ? 'Update Task' : 'Add Task' }}</button>
-    </form>
-    <h2>Tasks</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Description</th>
-          <th>Due Date</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(task, index) in tasks" :key="index">
-          <td>{{ task.name }}</td>
-          <td>{{ task.description }}</td>
-          <td>{{ task.dueDate }}</td>
-          <td>{{ task.status }}</td>
-          <td>
-            <button @click="editTask(task)">Edit</button>
-            <button @click="deleteTask(task)">Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div v-if="selectedTask">
-      <h2>{{ selectedTask.name }}</h2>
-      <p>{{ selectedTask.description }}</p>
-      <p>Due Date: {{ selectedTask.dueDate }}</p>
-      <p>Status: {{ selectedTask.status }}</p>
-    </div>
-  </div>-->
-</div> 
+    </v-container>
+  </div>
 </template>
 
 <script lang="ts">
@@ -110,7 +60,7 @@ export default class TaskManager extends Vue {
     name: "",
     description: "",
     dueDate: "",
-    status: "New",
+    completed: false,
   };
   public selectedTask: ITask | null = null;
   public isEditing = false;
@@ -125,6 +75,17 @@ export default class TaskManager extends Vue {
     this.tasks = await this.taskService.getTasks();
   }
 
+  public async changeTaskStatus(task: ITask) {
+    await this.taskService.updateTask(
+      task.id,
+      task.name,
+      task.description,
+      task.dueDate,
+      !task.completed
+    );
+    this.getTasks();
+  }
+
   public async submitTask() {
     if (this.isEditing) {
       await this.taskService.updateTask(
@@ -132,9 +93,8 @@ export default class TaskManager extends Vue {
         this.task.name,
         this.task.description,
         this.task.dueDate,
-        this.task.status
+        this.task.completed
       );
-      this.isEditing = false;
     } else {
       await this.taskService.createTask(
         this.task.name,
@@ -142,6 +102,8 @@ export default class TaskManager extends Vue {
         this.task.dueDate
       );
     }
+    this.isEditing = false;
+    this.dialogOpen = false;
     this.resetForm();
     this.getTasks();
   }
@@ -153,18 +115,18 @@ export default class TaskManager extends Vue {
 
   public async editTask(task: ITask) {
     this.task = { ...task };
-    this.selectedTask = null;
+    this.selectedTask = this.task;
     this.isEditing = true;
+    this.dialogOpen = true;
   }
 
   public selectTask(task: ITask) {
     this.task = { ...task };
     this.selectedTask = this.task;
-    this.isEditing = true;
-    this.dialogOpen = true;
   }
+
   public resetForm() {
-    this.task = { name: "", description: "", dueDate: "", status: "New" };
+    this.task = { name: "", description: "", dueDate: "", completed: false };
   }
 }
 </script>
